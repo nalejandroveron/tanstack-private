@@ -1,0 +1,26 @@
+pattern codegen_table($tableName, $tableFile) {
+  sequential {
+    bubble($tableName) file($body) where $body <: contains `import { drizzle } from 'drizzle-orm/postgres-js';` as $import => `import { $tableName } from './$tableName';\n$import` where {
+      $program <: not contains `import { $tableName } from './$tableName';`
+    },
+    bubble($tableName) file($body) where $body <: contains `schema: { $schema }` where {
+      and {
+        $schema <: not includes $tableName,
+          if ($schema <: not .) {
+            $schema = `\n    $tableName,\n    $schema\n`
+          } else {
+            $schema = `\n    $tableName,\n `
+          }
+      }
+    } => `schema: { $schema }`,
+    bubble($tableName, $tableFile) file($body) where {
+      $new_files += file(name=$tableFile, body=`import { pgTable, uuid, text, integer, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { timestamps } from './columns.helpers';
+
+export const $tableName = pgTable('$tableName', {
+  id: uuid().primaryKey(),
+  ...timestamps,
+});`)
+    },
+  }
+}

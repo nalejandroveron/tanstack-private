@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: InterVariable, sans-serif;
+}
+
+html,
+body {
+  @apply h-full bg-zinc-900 text-white;
+}

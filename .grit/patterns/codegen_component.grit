@@ -1,0 +1,7 @@
+pattern codegen_component($componentName) {
+  `` => `export function $componentName() {
+    return (
+      <div />
+    );
+  }`
+}
